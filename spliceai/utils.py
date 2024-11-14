@@ -182,9 +182,9 @@ def get_delta_scores(record, ann, dist_var, mask):
                 y_ref = y_ref[:, ::-1]
                 y_alt = y_alt[:, ::-1]
             
-        #Deletion
-        #(ref)-------------AGT---------------
-        #(alt)-------------G00---------------
+            #Deletion
+            #(ref)-------------AGT---------------
+            #(alt)-------------G00---------------
             if ref_len > 1 and alt_len == 1:
                 y_alt = np.concatenate([
                     y_alt[:, :cov//2+alt_len],
@@ -192,9 +192,9 @@ def get_delta_scores(record, ann, dist_var, mask):
                     y_alt[:, cov//2+alt_len:]],
                     axis=1)
             
-        #Insertion
-        #(ref)-------------[A]---------------
-        #(alt)-------------[GGT(ext max score)]---------------
+            #Insertion
+            #(ref)-------------[A]---------------
+            #(alt)-------------[GGT(ext max score)]---------------
             elif ref_len == 1 and alt_len > 1:
                 y_alt = np.concatenate([
                     y_alt[:, :cov//2],
@@ -204,10 +204,10 @@ def get_delta_scores(record, ann, dist_var, mask):
 
             #MNV  (referred from https://github.com/kdahlo/SpliceAI.git)
             elif ref_len > 1 and alt_len > 1:
-            zblock = np.zeros((1,ref_len-1,3))
-            y_alt = np.concatenate([
-                y_alt[:, :cov//2],
-                np.max(y_alt[:, cov//2:cov//2+alt_len], axis=1)[:, None, :],
+                zblock = np.zeros((1,ref_len-1,3))
+                y_alt = np.concatenate([
+                    y_alt[:, :cov//2],
+                    np.max(y_alt[:, cov//2:cov//2+alt_len], axis=1)[:, None, :],
                     block,
                     y_alt[:, cov//2+alt_len:]],
                     axis=1)
@@ -219,7 +219,7 @@ def get_delta_scores(record, ann, dist_var, mask):
             idx_pd = (y[1, :, 2]-y[0, :, 2]).argmax()
             idx_nd = (y[0, :, 2]-y[1, :, 2]).argmax()
 
-#edit_point1/2
+            #edit_point1/2
             mask_pa = np.logical_and(np.any(idx_pa-cov//2 == dist_ann[2]), mask)
             mask_na = np.logical_and(np.all(idx_na-cov//2 != dist_ann[2]), mask)
             mask_pd = np.logical_and(np.any(idx_pd-cov//2 == dist_ann[2]), mask)
