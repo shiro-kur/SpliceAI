@@ -56,9 +56,10 @@ def main():
 
     header = vcf.header
     header.add_line('##INFO=<ID=SpliceAI,Number=.,Type=String,Description="SpliceAIv1.3.1 variant '
-                    'annotation. These include delta scores (DS) and delta positions (DP) for '
-                    'acceptor gain (AG), acceptor loss (AL), donor gain (DG), and donor loss (DL). '
-                    'Format: ALLELE|SYMBOL|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL">')
+                    'annotation.(output-modified ver by Kurosawa, et al. 2023) '
+                    'These include delta scores (DS) and raw scores (RS) and delta positions (DP) '
+                    'for acceptor gain (AG), acceptor loss (AL), donor gain (DG), and donor loss (DL). '
+                    'Format: ALLELE|GENE_ID|DS_AG|RS_AG|DP_AG|DS_AL|RS_AL|DP_AL|DS_DG|RS_DG|DP_DG|DS_DL|RS_DL|DP_DL"> ')
 
     try:
         output = pysam.VariantFile(args.O, mode='w', header=header)
