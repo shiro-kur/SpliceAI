@@ -5,6 +5,13 @@
 
 This package annotates genetic variants with their predicted effect on splicing, as described in [Jaganathan *et al*, Cell 2019 in press](https://doi.org/10.1016/j.cell.2018.12.015). The annotations for all possible substitutions, 1 base insertions, and 1-4 base deletions within genes are available [here](https://basespace.illumina.com/s/otSPW8hnhaZR) for download. These annotations are free for academic and not-for-profit use; other use requires a commercial license from Illumina, Inc.
 
+### Modified Points by shiro-kur
+- extend annotation to MNVs (ex. CAT>CATACT) (originally by https://github.com/kdahlo/SpliceAI)
+- output raw score.
+- output gene ID instead of gene symbols.
+- compatibility as PDIVAS feature (Pathogenicity predictor for Deep-Intronic Variants causing Aberrant Splicing) (https://github.com/shiro-kur/PDIVAS)
+- control CPU usage
+
 ### License
 SpliceAI source code is provided under the [GPLv3 license](LICENSE). SpliceAI includes several third party packages provided under other open source licenses, please see [NOTICE](NOTICE) for additional details. The trained models used by SpliceAI (located in this package at spliceai/models) are provided under the [CC BY NC 4.0](LICENSE) license for academic and non-commercial use; other use requires a commercial license from Illumina, Inc.
 
