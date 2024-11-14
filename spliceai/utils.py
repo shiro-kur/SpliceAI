@@ -123,8 +123,8 @@ def get_delta_scores(record, ann, dist_var, mask):
 
     chrom = normalise_chrom(record.chrom, list(ann.ref_fasta.keys())[0])
     try:
-	###----------------wid//2--------------                 --------------------wid//2-----------------
-	###[up_context(5kb)][up_dist(D//2(bp))][coordinate(1bp)][down_dist(D//2(bp))][down_context(5kb)]###
+    ###----------------wid//2--------------                 --------------------wid//2-----------------
+    ###[up_context(5kb)][up_dist(D//2(bp))][coordinate(1bp)][down_dist(D//2(bp))][down_context(5kb)]###
         seq = ann.ref_fasta[chrom][record.pos-wid//2-1:record.pos+wid//2].seq
     except (IndexError, ValueError):
         logging.warning('Skipping record (fasta issue): {}'.format(record))
@@ -152,20 +152,20 @@ def get_delta_scores(record, ann, dist_var, mask):
                 continue
 
             #get relative pos of tx_start/end & exon_boundaries
-	    #The coordinate was set to 0.
+        #The coordinate was set to 0.
             #dist_ann = [dist_tx_start, dist_tx_end, dist_exon_bdry]
             dist_ann = ann.get_pos_data(idxs[i], record.pos)
-	    # Padding for outside of transcript regions
+        # Padding for outside of transcript regions
             pad_size = [max(wid//2+dist_ann[0], 0), max(wid//2-dist_ann[1], 0)]
             ref_len = len(record.ref)
             alt_len = len(record.alts[j])
             del_len = max(ref_len-alt_len, 0)
 
-	    #Replace "seq" out of tx region with "N"
+        #Replace "seq" out of tx region with "N"
             x_ref = 'N'*pad_size[0]+seq[pad_size[0]:wid-pad_size[1]]+'N'*pad_size[1]
 
             ###----------------wid//2--------------                 --------------------wid//2-----------------
-	    ###[up_context(5kb)][up_dist(D//2(bp))][coordinate(1bp)][down_dist(D//2(bp))][down_context(5kb)]###
+        ###[up_context(5kb)][up_dist(D//2(bp))][coordinate(1bp)][down_dist(D//2(bp))][down_context(5kb)]###
             x_alt = x_ref[:wid//2]+str(record.alts[j])+x_ref[wid//2+ref_len:]
 
             x_ref = one_hot_encode(x_ref)[None, :]
@@ -181,20 +181,20 @@ def get_delta_scores(record, ann, dist_var, mask):
             if strands[i] == '-':
                 y_ref = y_ref[:, ::-1]
                 y_alt = y_alt[:, ::-1]
-		    
-	    #Deletion
-	    #(ref)-------------AGT---------------
-	    #(alt)-------------G00---------------
+            
+        #Deletion
+        #(ref)-------------AGT---------------
+        #(alt)-------------G00---------------
             if ref_len > 1 and alt_len == 1:
                 y_alt = np.concatenate([
                     y_alt[:, :cov//2+alt_len],
                     np.zeros((1, del_len, 3)),
                     y_alt[:, cov//2+alt_len:]],
                     axis=1)
-		    
-	    #Insertion
-	    #(ref)-------------[A]---------------
-	    #(alt)-------------[GGT(ext max score)]---------------
+            
+        #Insertion
+        #(ref)-------------[A]---------------
+        #(alt)-------------[GGT(ext max score)]---------------
             elif ref_len == 1 and alt_len > 1:
                 y_alt = np.concatenate([
                     y_alt[:, :cov//2],
@@ -204,13 +204,13 @@ def get_delta_scores(record, ann, dist_var, mask):
 
             #MNV  (referred from https://github.com/kdahlo/SpliceAI.git)
             elif ref_len > 1 and alt_len > 1:
-	        zblock = np.zeros((1,ref_len-1,3))
-        	y_alt = np.concatenate([
+            zblock = np.zeros((1,ref_len-1,3))
+            y_alt = np.concatenate([
                 y_alt[:, :cov//2],
                 np.max(y_alt[:, cov//2:cov//2+alt_len], axis=1)[:, None, :],
-                   	block,
-                   	y_alt[:, cov//2+alt_len:]],
-                  	axis=1)
+                    block,
+                    y_alt[:, cov//2+alt_len:]],
+                    axis=1)
 
             y = np.concatenate([y_ref, y_alt])
 
@@ -229,18 +229,17 @@ def get_delta_scores(record, ann, dist_var, mask):
                                 record.alts[j],
                                 genes[i],
                                 (y[1, idx_pa, 1]-y[0, idx_pa, 1])*(1-mask_pa),
-				y[1, idx_pa, 1]*(1-mask_pa),
-				idx_pa-cov//2 ,
-				(y[0, idx_na, 1]-y[1, idx_na, 1])*(1-mask_na),
-				y[1, idx_na, 1]*(1-mask_na),
-				idx_na-cov//2,
+                y[1, idx_pa, 1]*(1-mask_pa),
+                idx_pa-cov//2 ,
+                (y[0, idx_na, 1]-y[1, idx_na, 1])*(1-mask_na),
+                y[1, idx_na, 1]*(1-mask_na),
+                idx_na-cov//2,
                                 (y[1, idx_pd, 2]-y[0, idx_pd, 2])*(1-mask_pd),
-				y[1, idx_pd, 2]*(1-mask_pd),
-				idx_pd-cov//2,
-				(y[0, idx_nd, 2]-y[1, idx_nd, 2])*(1-mask_nd),
-				y[1, idx_nd, 2]*(1-mask_nd),
-				idx_nd-cov//2)
-				)
+                y[1, idx_pd, 2]*(1-mask_pd),
+                idx_pd-cov//2,
+                (y[0, idx_nd, 2]-y[1, idx_nd, 2])*(1-mask_nd),
+                y[1, idx_nd, 2]*(1-mask_nd),
+                idx_nd-cov//2)
+                )
 
     return delta_scores
-
