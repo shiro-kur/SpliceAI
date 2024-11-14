@@ -10,7 +10,7 @@ This package annotates genetic variants with their predicted effect on splicing,
 - output raw score.
 - output gene ID instead of gene symbols.
 - compatibility as PDIVAS feature (Pathogenicity predictor for Deep-Intronic Variants causing Aberrant Splicing) (https://github.com/shiro-kur/PDIVAS)
-- control CPU usage
+- control CPU usage (please $export CPU=x before running, x=4 on default.)
 
 ### License
 SpliceAI source code is provided under the [GPLv3 license](LICENSE). SpliceAI includes several third party packages provided under other open source licenses, please see [NOTICE](NOTICE) for additional details. The trained models used by SpliceAI (located in this package at spliceai/models) are provided under the [CC BY NC 4.0](LICENSE) license for academic and non-commercial use; other use requires a commercial license from Illumina, Inc.
