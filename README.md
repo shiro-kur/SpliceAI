@@ -12,7 +12,13 @@ This package annotates genetic variants with their predicted effect on splicing,
 - compatibility as PDIVAS feature (Pathogenicity predictor for Deep-Intronic Variants causing Aberrant Splicing) (https://github.com/shiro-kur/PDIVAS)
 - control CPU usage (please $export CPU=x before running, x=4 on default.)
 
+
+### Installation & Test Run
 ```sh
+$ conda install -c bioconda -c conda-forge spliceai tensorflow
+$ git clone https://github.com/shiro-kur/SpliceAI.git
+$ cp -r SpliceAI/spliceai/* ~/miniconda3/envs/PDIVAS/lib/python3.9/site-packages/spliceai/
+
 # You can test the modified-SpliceAI run through this command.
 $ spliceai -I examples/input.vcf -O examples/input.AI.vcf -A grch37 -R  ../../Ref/hg19.fa -M 1
 # After the run, compare the examples/input.AI.vcf and examples/output.vcf (the intended results).
