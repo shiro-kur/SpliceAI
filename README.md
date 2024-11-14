@@ -12,6 +12,26 @@ This package annotates genetic variants with their predicted effect on splicing,
 - compatibility as PDIVAS feature (Pathogenicity predictor for Deep-Intronic Variants causing Aberrant Splicing) (https://github.com/shiro-kur/PDIVAS)
 - control CPU usage (please $export CPU=x before running, x=4 on default.)
 
+Details of Modified SpliceAI INFO field:
+
+|    ID    | Description |
+| -------- | ----------- |
+|  ALLELE  | Alternate allele |
+|  GENE_ID  | Gene ID |
+|  DS_AG   | Delta score (acceptor gain) |
+|  RS_AG   | Raw score (acceptor gain) |
+|  DP_AG   | Delta position (acceptor gain) |
+|  DS_AL   | Delta score (acceptor loss) |
+|  RS_AL   | Raw score (acceptor loss) |
+|  DP_AL   | Delta position (acceptor loss) |
+|  DS_DG   | Delta score (donor gain) |
+|  RS_DG   | Raw score (donor gain) |
+|  DP_DG   | Delta position (donor gain) |
+|  DS_DL   | Delta score (donor loss) |
+|  RS_DL   | Raw score (donor loss) |
+|  DP_DL   | Delta position (donor loss) |
+
+
 ### License
 SpliceAI source code is provided under the [GPLv3 license](LICENSE). SpliceAI includes several third party packages provided under other open source licenses, please see [NOTICE](NOTICE) for additional details. The trained models used by SpliceAI (located in this package at spliceai/models) are provided under the [CC BY NC 4.0](LICENSE) license for academic and non-commercial use; other use requires a commercial license from Illumina, Inc.
 
