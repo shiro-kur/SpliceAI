@@ -5,6 +5,18 @@ from pyfaidx import Fasta
 from keras.models import load_model
 import logging
 
+import tensorflow as tf
+import subprocess
+import os
+
+try :
+        cpu = int(os.environ['CPU'])
+except :
+        cpu = 4
+        print("$CPU was not set. Run as $CPU=4. Or, you can set via $export CPU=x.")
+
+tf.config.threading.set_intra_op_parallelism_threads(cpu)
+tf.config.threading.set_inter_op_parallelism_threads(cpu)
 
 class Annotator:
 
