@@ -208,7 +208,7 @@ def get_delta_scores(record, ann, dist_var, mask):
                 y_alt = np.concatenate([
                     y_alt[:, :cov//2],
                     np.max(y_alt[:, cov//2:cov//2+alt_len], axis=1)[:, None, :],
-                    block,
+                    zblock,
                     y_alt[:, cov//2+alt_len:]],
                     axis=1)
 
