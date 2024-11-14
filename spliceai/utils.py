@@ -58,7 +58,9 @@ class Annotator:
 
         dist_tx_start = self.tx_starts[idx]-pos
         dist_tx_end = self.tx_ends[idx]-pos
-        dist_exon_bdry = min(np.union1d(self.exon_starts[idx], self.exon_ends[idx])-pos, key=abs)
+        
+#edit_point1/2
+        dist_exon_bdry = np.union1d(self.exon_starts[idx], self.exon_ends[idx])-pos
         dist_ann = (dist_tx_start, dist_tx_end, dist_exon_bdry)
 
         return dist_ann
@@ -135,10 +137,6 @@ def get_delta_scores(record, ann, dist_var, mask):
             if '<' in record.alts[j] or '>' in record.alts[j]:
                 continue
 
-            if len(record.ref) > 1 and len(record.alts[j]) > 1:
-                delta_scores.append("{}|{}|.|.|.|.|.|.|.|.".format(record.alts[j], genes[i]))
-                continue
-
             dist_ann = ann.get_pos_data(idxs[i], record.pos)
             pad_size = [max(wid//2+dist_ann[0], 0), max(wid//2-dist_ann[1], 0)]
             ref_len = len(record.ref)
@@ -175,6 +173,16 @@ def get_delta_scores(record, ann, dist_var, mask):
                     y_alt[:, cov//2+alt_len:]],
                     axis=1)
 
+            #MNP handling (referred from https://github.com/kdahlo/SpliceAI.git)
+            elif ref_len > 1 and alt_len > 1:
+                zblock = np.zeros((1,ref_len-1,3))
+                y_alt = np.concatenate([
+                    y_alt[:, :cov//2],
+                    np.max(y_alt[:, cov//2:cov//2+alt_len], axis=1)[:, None, :],
+                    zblock,
+                    y_alt[:, cov//2+alt_len:]],
+                    axis=1)
+
             y = np.concatenate([y_ref, y_alt])
 
             idx_pa = (y[1, :, 1]-y[0, :, 1]).argmax()
@@ -182,22 +190,28 @@ def get_delta_scores(record, ann, dist_var, mask):
             idx_pd = (y[1, :, 2]-y[0, :, 2]).argmax()
             idx_nd = (y[0, :, 2]-y[1, :, 2]).argmax()
 
-            mask_pa = np.logical_and((idx_pa-cov//2 == dist_ann[2]), mask)
-            mask_na = np.logical_and((idx_na-cov//2 != dist_ann[2]), mask)
-            mask_pd = np.logical_and((idx_pd-cov//2 == dist_ann[2]), mask)
-            mask_nd = np.logical_and((idx_nd-cov//2 != dist_ann[2]), mask)
+#edit_point1/2
+            mask_pa = np.logical_and(np.any(idx_pa-cov//2 == dist_ann[2]), mask)
+            mask_na = np.logical_and(np.all(idx_na-cov//2 != dist_ann[2]), mask)
+            mask_pd = np.logical_and(np.any(idx_pd-cov//2 == dist_ann[2]), mask)
+            mask_nd = np.logical_and(np.all(idx_nd-cov//2 != dist_ann[2]), mask)
 
-            delta_scores.append("{}|{}|{:.2f}|{:.2f}|{:.2f}|{:.2f}|{}|{}|{}|{}".format(
+            delta_scores.append("{}|{}|{:.2f}|{:.2f}|{}|{:.2f}|{:.2f}|{}|{:.2f}|{:.2f}|{}|{:.2f}|{:.2f}|{}".format(
                                 record.alts[j],
                                 genes[i],
                                 (y[1, idx_pa, 1]-y[0, idx_pa, 1])*(1-mask_pa),
-                                (y[0, idx_na, 1]-y[1, idx_na, 1])*(1-mask_na),
+				y[1, idx_pa, 1]*(1-mask_pa),
+				idx_pa-cov//2 ,
+				(y[0, idx_na, 1]-y[1, idx_na, 1])*(1-mask_na),
+				y[1, idx_na, 1]*(1-mask_na),
+				idx_na-cov//2,
                                 (y[1, idx_pd, 2]-y[0, idx_pd, 2])*(1-mask_pd),
-                                (y[0, idx_nd, 2]-y[1, idx_nd, 2])*(1-mask_nd),
-                                idx_pa-cov//2,
-                                idx_na-cov//2,
-                                idx_pd-cov//2,
-                                idx_nd-cov//2))
+				y[1, idx_pd, 2]*(1-mask_pd),
+				idx_pd-cov//2,
+				(y[0, idx_nd, 2]-y[1, idx_nd, 2])*(1-mask_nd),
+				y[1, idx_nd, 2]*(1-mask_nd),
+				idx_nd-cov//2)
+				)
 
     return delta_scores
 
